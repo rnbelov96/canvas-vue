@@ -1,0 +1,67 @@
+.input__box {
+  position: relative;
+}
+
+.input {
+  background: #ffffff;
+  border: 1px solid rgba(36, 59, 96, 0.25);
+  border-radius: 0.5rem;
+  min-height: rem(55);
+  padding: rem(16);
+  display: block;
+  width: 100%;
+  color: black;
+
+  &::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &::-moz-placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:-ms-input-placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:-moz-placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.input.errored {
+  border: 1px solid #EB5757;
+
+  &+label {
+    display: flex;
+  }
+}
+
+.input__error-label {
+  padding-left: rem(12);
+  padding-top: rem(5);
+  padding-bottom: rem(5);
+  padding-right: rem(12);
+  color: #eb5757;
+  position: absolute;
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  margin-bottom: 0;
+  background: #FFFFFF;
+  border: 1px solid #EB5757;
+  box-shadow: 0px 0px 4px rgba(235, 87, 87, 0.08), 0px 4px 8px rgba(235, 87, 87, 0.12);
+  border-radius: 0.5rem;
+  gap: 0.5rem;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  display: none;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 1px;
+  }
+}
