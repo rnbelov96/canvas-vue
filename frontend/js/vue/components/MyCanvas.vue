@@ -9,34 +9,29 @@
     @mousemove="mousemoveHandler"
   />
   <div>
-    <label>
-      <p>Радиус круга</p>
-      <input
-        v-model="circleRadiusInputValue"
-        type="number"
-      >
-    </label>
-    <label>
-      <p>Сторона квадрата</p>
-      <input
-        v-model="rectSideInputValue"
-        type="number"
-      >
-    </label>
-    <label>
-      <p>X квадрата</p>
-      <input
-        v-model="rectPositionXInputValue"
-        type="number"
-      >
-    </label>
-    <label>
-      <p>Y квадрата</p>
-      <input
-        v-model="rectPositionYInputValue"
-        type="number"
-      >
-    </label>
+    <size-input
+      v-model="circleData.r"
+      label="Радиус круга"
+      :min="minCircleRadius"
+      :max="maxCircleRadius"
+    />
+    <size-input
+      v-model="rectData.side"
+      label="Сторона квадрата"
+      :min="0"
+      :max="maxRectSide"
+      :after-change="centerRect"
+    />
+    <position-input
+      label="X квадрата"
+      :value="rectData.x"
+      @update="updateRectPosition('x', $event)"
+    />
+    <position-input
+      label="Y квадрата"
+      :value="rectData.y"
+      @update="updateRectPosition('y', $event)"
+    />
   </div>
 </template>
 
@@ -49,6 +44,8 @@ import {
   watch,
 } from 'vue';
 import { useMousePosition } from '../../composables/use-mouse-position';
+import SizeInput from './SizeInput.vue';
+import PositionInput from './PositionInput.vue';
 
 const props = defineProps({
   width: {
@@ -132,56 +129,26 @@ const centerRect = () => {
   rectData.y = props.height / 2 - rectData.side / 2;
 };
 
-const circleRadiusInputValue = computed({
-  get() {
-    return circleData.r;
-  },
-  set(value) {
-    if (value < Math.sqrt(((rectData.side ** 2) * 2)) / 2) {
-      circleData.r = Math.round(Math.sqrt(((rectData.side ** 2) * 2)) / 2);
-    } else if (value > props.width / 2) {
-      circleData.r = props.width / 2;
-    } else {
-      circleData.r = value;
-    }
-    centerRect();
-  },
-});
-const rectSideInputValue = computed({
-  get() {
-    return rectData.side;
-  },
-  set(value) {
-    if (Math.sqrt(((value ** 2) * 2)) > circleData.r * 2) {
-      rectData.side = Math.floor(Math.sqrt((circleData.r * 2) ** 2 / 2));
-    } else if (value < 0) {
-      rectData.side = 1;
-    } else {
-      rectData.side = value;
-    }
-    centerRect();
-  },
-});
-const rectPositionXInputValue = computed({
-  get() {
-    return rectData.x;
-  },
-  set(value) {
-    if (isRectInsideCircle(value, rectData.y)) {
-      rectData.x = value;
-    }
-  },
-});
-const rectPositionYInputValue = computed({
-  get() {
-    return rectData.y;
-  },
-  set(value) {
-    if (isRectInsideCircle(rectData.x, value)) {
-      rectData.y = value;
-    }
-  },
-});
+const minCircleRadius = computed(() => Math.floor(Math.sqrt(((rectData.side ** 2) * 2)) / 2));
+const maxCircleRadius = computed(() => Math.ceil(props.width / 2));
+const maxRectSide = computed(() => Math.floor(Math.sqrt((circleData.r * 2) ** 2 / 2)));
+
+const updateRectPosition = (axis, value) => {
+  switch (axis) {
+    case 'x':
+      if (isRectInsideCircle(value, rectData.y)) {
+        rectData.x = value;
+      }
+      break;
+    case 'y':
+      if (isRectInsideCircle(rectData.x, value)) {
+        rectData.y = value;
+      }
+      break;
+    default:
+      break;
+  }
+};
 
 const isDraggingAllow = () => {
   return mx.value > rectData.x && mx.value < rectData.x + rectData.side && my.value > rectData.y && my.value < rectData.y + rectData.side;
